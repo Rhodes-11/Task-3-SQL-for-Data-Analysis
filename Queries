@@ -1,0 +1,46 @@
+-- 1. List all customers
+SELECT * FROM customers;
+
+-- 2. Orders placed by customers from Germany
+SELECT o.OrderID, c.CompanyName, c.Country
+FROM orders o
+JOIN customers c ON o.CustomerID = c.CustomerID
+WHERE c.Country = 'Germany';
+
+-- 3. Total number of orders by each employee
+SELECT e.FirstName, e.LastName, COUNT(o.OrderID) AS TotalOrders
+FROM employees e
+LEFT JOIN orders o ON e.EmployeeID = o.EmployeeID
+GROUP BY e.EmployeeID;
+
+-- 4. Average freight per country
+SELECT c.Country, AVG(o.Freight) AS AvgFreight
+FROM orders o
+JOIN customers c ON o.CustomerID = c.CustomerID
+GROUP BY c.Country
+ORDER BY AvgFreight DESC;
+
+-- 5. Products with above average unit price
+SELECT ProductName, UnitPrice
+FROM products
+WHERE UnitPrice > (SELECT AVG(UnitPrice) FROM products);
+
+-- 6. Total sales amount per customer
+SELECT c.CompanyName, SUM(od.UnitPrice * od.Quantity) AS TotalSales
+FROM customers c
+JOIN orders o ON c.CustomerID = o.CustomerID
+JOIN order_details od ON o.OrderID = od.OrderID
+GROUP BY c.CustomerID;
+
+-- 7. Create a view of top 5 customers by sales
+CREATE VIEW top_customers AS
+SELECT c.CustomerID, c.CompanyName, SUM(od.UnitPrice * od.Quantity) AS TotalSales
+FROM customers c
+JOIN orders o ON c.CustomerID = o.CustomerID
+JOIN order_details od ON o.OrderID = od.OrderID
+GROUP BY c.CustomerID
+ORDER BY TotalSales DESC
+LIMIT 5;
+
+-- 8. Index creation for performance
+CREATE INDEX idx_customer_id ON orders(CustomerID);
