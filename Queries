@@ -1,0 +1,36 @@
+1. List all products and their categories
+SELECT Product, Category FROM products;
+
+ 2. Total sales amount (revenue) per product
+SELECT 
+    p.Product,
+    SUM(s.Amount) AS TotalRevenue
+FROM sales s
+JOIN products p ON s.PID = p.PID
+GROUP BY p.Product
+ORDER BY TotalRevenue DESC;
+
+3. Average number of boxes sold per region
+SELECT 
+    g.Region,
+    AVG(s.Boxes) AS AvgBoxes
+FROM sales s
+JOIN geo g ON s.GeoID = g.GeoID
+GROUP BY g.Region;
+
+4. Top 5 salespeople by total sales
+SELECT 
+    sp.Salesperson,
+    SUM(s.Amount) AS TotalSales
+FROM sales s
+JOIN people sp ON s.SPID = sp.SPID
+GROUP BY sp.Salesperson
+ORDER BY TotalSales DESC
+LIMIT 5;
+
+ 5. Products sold in more than 500 boxes in a single transaction
+SELECT 
+    s.PID, p.Product, s.Boxes
+FROM sales s
+JOIN products p ON s.PID = p.PID
+WHERE s.Boxes > 500;
